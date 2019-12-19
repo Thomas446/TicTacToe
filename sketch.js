@@ -11,13 +11,15 @@ var onlyAIGame;
 
 // creates canvas
 function setup(){
-	if(windowWidth < windowHeight){
-		var size = windowWidth/2;
+	if(displayWidth < displayHeight){
+		var size = displayWidth/2;
+		var offset = 100;
 	}else{
-		var size = windowHeight/2;
+		var size = displayHeight/2;
+		var offset = 0;
 	}
 	var cnv = createCanvas(size,size);
-	cnv.position(windowWidth/2 - (width/2),windowHeight/2 - height/4);
+	cnv.position(displayWidth/2 - (width/2), displayHeight/2 + offset - (height/2));
 	noLoop();
 }
 // draws
@@ -64,16 +66,18 @@ function showEvals(){
 	}else{
 		document.getElementById("evalButton").innerHTML = "Hide engine evaluation!";
 		showingEvals = setInterval(function(){
-			var evalString = "Engine Evaluations: <br/>";
-			document.getElementById("engineHolder").style.display = "inline-block";
 			if(newState){
-			miniMax(board, player, 0);
-			newState = !newState;
-			}
-			for(var i = 0; i < engineEvals.length; i++){
-				evalString += "(" + indexToCoords(engineEvals[i][0])+ "): " + (Math.floor(engineEvals[i][1]*100)/100) + "<br/>";
-			}
-			document.getElementById("engineHolder").innerHTML = evalString;
+				var evalString = "Engine Evaluations: <br/>";
+				document.getElementById("engineHolder").style.display = "inline-block";
+				miniMax(board, player, 0);
+				newState = !newState;
+				
+				for(var i = 0; i < engineEvals.length; i++){
+					evalString += "(" + indexToCoords(engineEvals[i][0])+ "): " + (Math.floor(engineEvals[i][1]*100)/100) + "<br/>";
+				}
+				document.getElementById("engineHolder").innerHTML = evalString;
+				}
+
 		}, 200);
 	}
 }

@@ -14,7 +14,8 @@ div{
     body{
       touch-action: manipulation;
     }
+	
 	div{
-		float:center;
+		float:none;
 	}
 	}
