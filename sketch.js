@@ -3,11 +3,14 @@ board.fill('z');
 let player = 'x';
 let gameOver = false;
 let AIGame = false;
-let disableClicking = false;
+let disableClicking = true;
+let engineEvals = [];
+var showEvals;
 
 // creates canvas
 function setup(){
-	createCanvas(500,500);
+	var cnv = createCanvas(500,500);
+	cnv.position(windowWidth/2 - (width/2),windowHeight/2 - height/2);
 	noLoop();
 }
 // draws
@@ -22,6 +25,35 @@ function draw(){
 	else if(winner == -1){
 		console.log("O wins");
 		gameOver = true;
+	}
+}
+function playAI(){
+	clearBoard();
+	disableClicking = false;
+	AIGame = true;
+}
+function playHuman(){
+	clearBoard();
+	disableClicking = false;
+	AIGame = false;
+}
+
+function showEvals(){
+	if(document.getElementById("engineHolder").style.display == "inline-block"){
+		clearInterval(showingEvals);
+		document.getElementById("engineHolder").style.display = "none";
+		document.getElementById("evalButton").innerHTML = "Show engine evaluation!";
+	}else{
+		document.getElementById("evalButton").innerHTML = "Hide engine evaluation!";
+		showingEvals = setInterval(function(){
+			var evalString = "Engine Evaluations: <br/>";
+			document.getElementById("engineHolder").style.display = "inline-block";
+			miniMax(board, player, 0);
+			for(var i = 0; i < engineEvals.length; i++){
+				evalString += "(" + indexToCoords(engineEvals[i][0])+ "): " + (Math.floor(engineEvals[i][1]*100)/100) + "<br/>";
+			}
+			document.getElementById("engineHolder").innerHTML = evalString;
+		}, 100);
 	}
 }
 // does the optimal move
@@ -44,13 +76,17 @@ function miniMax(tempBoard, currPlayer, layerNum){
 				evals.push([i, miniMax(makeMove(tempBoard, i, currPlayer), changeTurn(currPlayer), layerNum + 1)]);
 			}
 		}
-			return maximizeForPlayer(currPlayer, evals, layerNum);
+		if(layerNum == 0)
+			engineEvals = evals.slice();
+		
+		return maximizeForPlayer(currPlayer, evals, layerNum);
 			
 	}
 }
 function clearBoard(){
 	board.fill('z');
 	player = 'x';
+	gameOver = false;
 	redraw();
 }
 

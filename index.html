@@ -3,6 +3,14 @@
     <script src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.js"></script>
     <script src="sketch.js"></script>
   </head>
-  <body>
+  <body style="text-align: center;">
+  <button onclick="playAI()">Play vs. the AI!</button>
+  <button onclick="playHuman()">Play vs. a Human!</button>
+  <button id="evalButton" onclick="showEvals()">Show engine evaluation!</button>
+  <br>
+  <div id="engineHolder" style="float: right; display:none; border: 2px solid black;">
+  Engine Evaluations:
+  </div>
+  <br>
   </body>
 </html>
