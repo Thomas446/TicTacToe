@@ -2,15 +2,17 @@ let board = new Array(9);
 board.fill('z');
 let player = 'x';
 let gameOver = false;
-let AIGame = true;
+let AIGame = false;
+let disableClicking = false;
 
 // creates canvas
 function setup(){
-	createCanvas(96,96);
+	createCanvas(500,500);
 	noLoop();
 }
 // draws
 function draw(){	
+	clear();
 	drawBoard(board);
 	var winner = evaluateBoard(board);
 	if(winner == 1){
@@ -24,7 +26,7 @@ function draw(){
 }
 // does the optimal move
 function AIMove(){
-	var move = miniMax(board, player, true)[0];
+	var move = miniMax(board, player, 0)[0];
 	if(checkValid(board,move)){
 		board = makeMove(board, move,player);
 		player = changeTurn(player);
@@ -32,59 +34,88 @@ function AIMove(){
 	}	
 }
 // recursively evaluates the position (doesn't make a move yet)
-function miniMax(tempBoard, currPlayer, topLayer){
+function miniMax(tempBoard, currPlayer, layerNum){
 	var evals = [];
 	if(boardFilled(tempBoard) || evaluateBoard(tempBoard) != 0){
 		return evaluateBoard(tempBoard);
 	}else{
 		for(var i = 0; i < tempBoard.length; i++){
 			if(checkValid(tempBoard,i)){
-				evals.push([i, miniMax(makeMove(tempBoard, i, currPlayer), changeTurn(currPlayer), false)]);
+				evals.push([i, miniMax(makeMove(tempBoard, i, currPlayer), changeTurn(currPlayer), layerNum + 1)]);
 			}
 		}
-			return maximizeForPlayer(currPlayer, evals, topLayer);
+			return maximizeForPlayer(currPlayer, evals, layerNum);
 			
 	}
 }
+function clearBoard(){
+	board.fill('z');
+	player = 'x';
+	redraw();
+}
 
 // takes array of [index, eval] pairs and returns best;
-function maximizeForPlayer(currPlayer, evals, topLayer){
+function maximizeForPlayer(currPlayer, evals, layerNum){
 	if(currPlayer == 'x'){
 		var best = -.1;
 		var index = 0;
+		
+		// choose best move, winning faster incentivized by layerNum
 		for(var i = 0; i < evals.length; i++){
 			if(evals[i][1] > best){
-				best = evals[i][1];
+				best = evals[i][1] - layerNum*.01;
 				index = i;
 			}
+		}
+		// If guaranteed to lose, make lasting longer worth more
+		if(best < -.9){
+			for(var i = 0; i < evals.length; i++){
+			    if(evals[i][1] < best){
+					best = evals[i][1] + layerNum*.01;
+					index = i;
+			}
+		}
 		}
 	}else if(currPlayer == 'o'){
-		var best = .1;
+		var best = 1;
 		var index = 0;
+		
+		// choose best move, winning faster incentivized by layerNum
 		for(var i = 0; i < evals.length; i++){
 			if(evals[i][1] < best){
-				best = evals[i][1];
+				best = evals[i][1] + layerNum*.01;
 				index = i;
 			}
 		}
+		
+		// If guaranteed to lose, make lasting longer worth more
+		if(best > .9){
+			for(var i = 0; i < evals.length; i++){
+			    if(evals[i][1] < best){
+					best = evals[i][1] - layerNum*.01;
+					index = i;
+			}
+		}
+		}
 	}
-	if(topLayer)
+	if(layerNum == 0)
 		return evals[index];
 	else
-		return evals[index][1];
+		return best;
 }
 // click handler
 function mouseClicked(){
 	for(var i = 0; i < board.length; i++){
 		var centerX = (width/3)*(.5 + indexToCoords(i)[0]);
 		var centerY = (height/3)*(.5 + indexToCoords(i)[1]);
-		if(mouseX  < centerX + 15 && mouseX > centerX < 15 && mouseY < centerY + 15 && mouseY > centerY - 15){
+		if(mouseX  < centerX + (width/6) * .9 && mouseX > centerX < (width/6) * .9  && mouseY < centerY + (height/6) * .9  && mouseY > centerY - (height/6) * .9  && !disableClicking){
 			if(checkValid(board, i, player)){
 			board = makeMove(board, i, player);
 			player = changeTurn(player);
 			redraw();
 			if(AIGame){
-				setTimeout(function() {AIMove();}, 1000);
+				disableClicking = true;
+				setTimeout(function() {AIMove(); disableClicking = false;}, 1000);
 			}
 			break;
 			}
@@ -164,11 +195,11 @@ function checkValid(tempBoard, index){
 
 //draws the board
 function drawBoard(tempBoard){
-	line(64, 0,64,96);
-	line(32, 0 , 32, 96 );
+	line(width*(2/3), 0,width*(2/3),height);
+	line(width/3, 0 , width/3, height );
 	
-	line(0, 32, 96, 32);
-	line(0, 64, 96, 64);
+	line(0, height*(1/3), width, height*(1/3));
+	line(0, height*(2/3), width, height*(2/3));
 	
 	for(var i = 0; i < tempBoard.length; i++){
 		if(tempBoard[i] == 'x'){
