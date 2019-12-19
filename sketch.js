@@ -174,7 +174,6 @@ function touchStarted(){
 			}
 		}
 	}
-	return false;
 }
 
 // checks if someone has won (board is filled with z by default)
