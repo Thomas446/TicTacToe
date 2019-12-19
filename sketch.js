@@ -17,7 +17,7 @@ function setup(){
 		var size = windowHeight/2;
 	}
 	var cnv = createCanvas(size,size);
-	cnv.position(windowWidth/2 - (width/2),windowHeight/2 - height/2);
+	cnv.position(windowWidth/2 - (width/2),windowHeight/2 - height/4);
 	noLoop();
 }
 // draws
