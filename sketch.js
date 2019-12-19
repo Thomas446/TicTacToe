@@ -4,8 +4,10 @@ let player = 'x';
 let gameOver = false;
 let AIGame = false;
 let disableClicking = true;
+let newState = false;
 let engineEvals = [];
 var showEvals;
+var onlyAIGame;
 
 // creates canvas
 function setup(){
@@ -16,6 +18,7 @@ function setup(){
 // draws
 function draw(){	
 	clear();
+	newState = true;
 	drawBoard(board);
 	var winner = evaluateBoard(board);
 	if(winner == 1){
@@ -37,6 +40,16 @@ function playHuman(){
 	disableClicking = false;
 	AIGame = false;
 }
+function AIOnly(){
+	clearBoard();
+	disableClicking = true;
+	AIGame = false;
+	onlyAIGame = setInterval(function(){
+		AIMove();
+		if(gameOver || boardFilled(board))
+			clearInterval(onlyAIGame);
+	}, 1000);
+}
 
 function showEvals(){
 	if(document.getElementById("engineHolder").style.display == "inline-block"){
@@ -48,12 +61,15 @@ function showEvals(){
 		showingEvals = setInterval(function(){
 			var evalString = "Engine Evaluations: <br/>";
 			document.getElementById("engineHolder").style.display = "inline-block";
+			if(newState){
 			miniMax(board, player, 0);
+			newState = !newState;
+			}
 			for(var i = 0; i < engineEvals.length; i++){
 				evalString += "(" + indexToCoords(engineEvals[i][0])+ "): " + (Math.floor(engineEvals[i][1]*100)/100) + "<br/>";
 			}
 			document.getElementById("engineHolder").innerHTML = evalString;
-		}, 100);
+		}, 200);
 	}
 }
 // does the optimal move
@@ -139,8 +155,9 @@ function maximizeForPlayer(currPlayer, evals, layerNum){
 	else
 		return best;
 }
+
 // click handler
-function mouseClicked(){
+function touchStarted(){
 	for(var i = 0; i < board.length; i++){
 		var centerX = (width/3)*(.5 + indexToCoords(i)[0]);
 		var centerY = (height/3)*(.5 + indexToCoords(i)[1]);
@@ -157,7 +174,9 @@ function mouseClicked(){
 			}
 		}
 	}
+	return false;
 }
+
 // checks if someone has won (board is filled with z by default)
 function evaluateBoard(tempBoard){
 	var winningPlayer = 'z';
