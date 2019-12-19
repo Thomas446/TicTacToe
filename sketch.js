@@ -11,7 +11,12 @@ var onlyAIGame;
 
 // creates canvas
 function setup(){
-	var cnv = createCanvas(500,500);
+	if(windowWidth < windowHeight){
+		var size = windowWidth/2;
+	}else{
+		var size = windowHeight/2;
+	}
+	var cnv = createCanvas(size,size);
 	cnv.position(windowWidth/2 - (width/2),windowHeight/2 - height/2);
 	noLoop();
 }
