@@ -118,7 +118,7 @@ function clearBoard(){
 // takes array of [index, eval] pairs and returns best;
 function maximizeForPlayer(currPlayer, evals, layerNum){
 	if(currPlayer == 'x'){
-		var best = -.1;
+		var best = -1;
 		var index = 0;
 		
 		// choose best move, winning faster incentivized by layerNum
@@ -170,7 +170,7 @@ function touchStarted(){
 	for(var i = 0; i < board.length; i++){
 		var centerX = (width/3)*(.5 + indexToCoords(i)[0]);
 		var centerY = (height/3)*(.5 + indexToCoords(i)[1]);
-		if(mouseX  < centerX + (width/6) * .9 && mouseX > centerX < (width/6) * .9  && mouseY < centerY + (height/6) * .9  && mouseY > centerY - (height/6) * .9  && !disableClicking){
+		if(mouseX  < centerX + (width/6) * .9 && mouseX > centerX - (width/6) * .9  && mouseY < centerY + (height/6) * .9  && mouseY > centerY - (height/6) * .9  && !disableClicking){
 			if(checkValid(board, i, player)){
 			board = makeMove(board, i, player);
 			player = changeTurn(player);
