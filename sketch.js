@@ -21,6 +21,7 @@ function setup(){
 	var cnv = createCanvas(size,size);
 	cnv.position(displayWidth/2 - (width/2), displayHeight/2 + offset - (height/2));
 	noLoop();
+	playAI();
 }
 // draws
 function draw(){	
